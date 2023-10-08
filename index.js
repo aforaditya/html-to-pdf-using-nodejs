@@ -7,7 +7,6 @@ const readFile = utils.promisify(fs.readFile)
 const express = require('express')
 const app = express()
 const archiver = require('archiver');
-const { download } = require('express/lib/response')
 
 async function getTemplateHtml() {
 console.log("Loading template file in memory")
@@ -117,7 +116,13 @@ async function zip(resx){
         // Finalize the archive
         await archive.finalize();
         console.log("Zipped")
-        sendZip(resx)
+
+
+        archive.on('close', () => {
+            console.log('Archive finalized and saved.');
+            sendZip(resx)
+          });
+        
         
 }
 
