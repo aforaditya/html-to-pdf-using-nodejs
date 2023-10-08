@@ -48,6 +48,8 @@ for(let i=0; i<challans.length; i++){
 
 await browser.close();
 console.log("PDF Generated")
+zip()
+
 }).catch(err => {
 console.error(err)
 });
@@ -56,20 +58,44 @@ console.error(err)
 
 let challans = [
     {
-        challanNumber: 2,
-        challanData: {}
-    },
-    {
-        challanNumber: 1,
-        challanData: {}
+        challanNumber: 10011,
+        challanData: {
+            "ContactPersonName": "Dummy Value",
+            "DeliveryChallanNumber": "Dummy Value",
+            "DeliveryChallanDate": "Dummy Value",
+            "ReceiverName": "Dummy Value",
+            "ConsigneeName": "Dummy Value",
+            "ReceiverAddress": "Dummy Value",
+            "SpokesPersonName": "Dummy Value",
+            "ConsigneeMobileNumber": "Dummy Value",
+            "ReceiverCity": "Dummy Value",
+            "ConsigneeAddress": "Dummy Value",
+            "ReceiverStateAndPin": "Dummy Value",
+            "ConsigneeCity": "Dummy Value",
+            "ConsigneeStateAndPin": "Dummy Value",
+            "GSTINNumber": "Dummy Value",
+            "ShipToState": "Dummy Value",
+            "StateCode": "Dummy Value",
+            "PONumber": "Dummy Value",
+            "ProductDescription": "Dummy Value",
+            "HSNCode": "Dummy Value",
+            "MOQ": "Dummy Value",
+            "Boxes": "Dummy Value",
+            "Quantity": "Dummy Value",
+            "UnitPrice": "Dummy Value",
+            "TotalAmount": "Dummy Value",
+            "CGST": "Dummy Value",
+            "SGST": "Dummy Value",
+            "IGSTValue": "Dummy Value",
+            "IGST": "Dummy Value",
+            "Total": "Dummy Value",
+            "TotalPreTax": "Dummy",
+          }          
     }
 ]
 
 function zip(){
-    const filesToZip = [
-        '1.pdf',
-        '2.pdf'
-      ];
+    const filesToZip = challans.map(c=>c.challanNumber)
 
             // Create a ZIP archive
         const zipFileName = 'challan.zip';
@@ -88,6 +114,7 @@ function zip(){
 
         // Finalize the archive
         archive.finalize();
+        
 }
 
 
@@ -106,11 +133,17 @@ function sendZip(res){
       });
 }
 
-app.get('/generate', async (req, res)=>{
+
+async function generate(){
     await generatePdf(challans);
-    zip()
-    sendZip(res)
+}
+
+app.get('/generate', async (req, res)=>{
+      await generate()
+      sendZip(res)
 })
 
 
 app.listen(3000, ()=>console.log('Server ON'))
+
+
