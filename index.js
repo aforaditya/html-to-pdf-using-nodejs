@@ -95,6 +95,7 @@ let challans = [
 ]
 
 function zip(){
+    console.log("Zipping")
     const filesToZip = challans.map(c=>c.challanNumber)
 
             // Create a ZIP archive
@@ -114,6 +115,7 @@ function zip(){
 
         // Finalize the archive
         archive.finalize();
+        console.log("Zipped")
         
 }
 
@@ -134,13 +136,13 @@ function sendZip(res){
 }
 
 
-async function generate(){
+async function generate(res){
     await generatePdf(challans);
+    sendZip(res)
 }
 
 app.get('/generate', async (req, res)=>{
-      await generate()
-      sendZip(res)
+    generate(res)
 })
 
 
