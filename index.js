@@ -20,7 +20,7 @@ return Promise.reject("Could not load html template");
 }
 
 
-async function generatePdf(challans) {
+async function generatePdf(challans, resx) {
 
 
 getTemplateHtml().then(async (res) => {
@@ -48,7 +48,7 @@ for(let i=0; i<challans.length; i++){
 
 await browser.close();
 console.log("PDF Generated")
-zip()
+zip(resx)
 
 }).catch(err => {
 console.error(err)
@@ -94,9 +94,10 @@ let challans = [
     }
 ]
 
-function zip(){
+async function zip(resx){
     console.log("Zipping")
-    const filesToZip = challans.map(c=>c.challanNumber)
+    const filesToZip = challans.map(c=> `${c.challanNumber}.pdf`)
+    console.log(filesToZip);
 
             // Create a ZIP archive
         const zipFileName = 'challan.zip';
@@ -114,19 +115,21 @@ function zip(){
         });
 
         // Finalize the archive
-        archive.finalize();
+        await archive.finalize();
         console.log("Zipped")
+        sendZip(resx)
         
 }
 
 
 function sendZip(res){
+    console.log('Sending');
     res.download('challan.zip', (err) => {
         if (err) {
           res.status(500).send('Error downloading the ZIP file');
         } else {
           // Delete the zip file after it has been sent
-          fs.unlink(zipFileName, (unlinkError) => {
+          fs.unlink('challan.zip', (unlinkError) => {
             if (unlinkError) {
               console.error('Error deleting ZIP file:', unlinkError);
             }
@@ -135,10 +138,9 @@ function sendZip(res){
       });
 }
 
-
-async function generate(res){
-    await generatePdf(challans);
-    sendZip(res)
+function generate(res){
+     generatePdf(challans, res);
+     console.log('IN generate');
 }
 
 app.get('/generate', async (req, res)=>{
