@@ -110,7 +110,6 @@ app.get('/generate', async (req, res)=>{
     await generatePdf(challans);
     zip()
     sendZip(res)
-    res.json({success: true})
 })
 
 
