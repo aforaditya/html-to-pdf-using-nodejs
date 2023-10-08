@@ -6,6 +6,8 @@ const hb = require('handlebars')
 const readFile = utils.promisify(fs.readFile)
 const express = require('express')
 const app = express()
+const archiver = require('archiver');
+const { download } = require('express/lib/response')
 
 async function getTemplateHtml() {
 console.log("Loading template file in memory")
@@ -63,14 +65,53 @@ let challans = [
     }
 ]
 
+function zip(){
+    const filesToZip = [
+        '1.pdf',
+        '2.pdf'
+      ];
 
+            // Create a ZIP archive
+        const zipFileName = 'challan.zip';
+        const output = fs.createWriteStream(zipFileName);
+        const archive = archiver('zip', {
+        zlib: { level: 9 }, // Compression level (0-9)
+        });
+
+        // Pipe the archive to the output file
+        archive.pipe(output);
+
+        // Add files to the archive
+        filesToZip.forEach((file) => {
+        archive.file(file, { name: file });
+        });
+
+        // Finalize the archive
+        archive.finalize();
+}
+
+
+function sendZip(res){
+    res.download('challan.zip', (err) => {
+        if (err) {
+          res.status(500).send('Error downloading the ZIP file');
+        } else {
+          // Delete the zip file after it has been sent
+          fs.unlink(zipFileName, (unlinkError) => {
+            if (unlinkError) {
+              console.error('Error deleting ZIP file:', unlinkError);
+            }
+          });
+        }
+      });
+}
 
 app.get('/generate', async (req, res)=>{
     await generatePdf(challans);
+    zip()
+    sendZip(res)
     res.json({success: true})
 })
 
 
 app.listen(3000, ()=>console.log('Server ON'))
-
-generatePdf(challans)
