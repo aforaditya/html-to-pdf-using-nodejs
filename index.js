@@ -93,7 +93,21 @@ let challans = [
     }
 ]
 
+
+filesToDelete.forEach((fileName) => {
+  deleteFile(fileName);
+});function deleteFile(fileName) {
+    fs.unlink(fileName, (err) => {
+      if (err) {
+        console.error(`Error deleting ${fileName}:`, err);
+      } else {
+        console.log(`${fileName} has been deleted.`);
+      }
+    });
+  }
+
 async function zip(resx){
+
     console.log("Zipping")
     const filesToZip = challans.map(c=> `${c.challanNumber}.pdf`)
     console.log(filesToZip);
@@ -114,14 +128,19 @@ async function zip(resx){
         });
 
         // Finalize the archive
-        await archive.finalize();
+        archive.finalize();
         console.log("Zipped")
-
-
-        archive.on('close', () => {
-            console.log('Archive finalized and saved.');
-            sendZip(resx)
-          });
+        function deleteFile(fileName) {
+            fs.unlink(fileName, (err) => {
+              if (err) {
+                console.error(`Error deleting ${fileName}:`, err);
+              } else {
+                console.log(`${fileName} has been deleted.`);
+              }
+            });
+          }
+        setInterval(()=>sendZip(resx), 3000)
+        
         
         
 }
