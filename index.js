@@ -94,9 +94,7 @@ let challans = [
 ]
 
 
-filesToDelete.forEach((fileName) => {
-  deleteFile(fileName);
-});function deleteFile(fileName) {
+function deleteFile(fileName) {
     fs.unlink(fileName, (err) => {
       if (err) {
         console.error(`Error deleting ${fileName}:`, err);
@@ -130,15 +128,11 @@ async function zip(resx){
         // Finalize the archive
         archive.finalize();
         console.log("Zipped")
-        function deleteFile(fileName) {
-            fs.unlink(fileName, (err) => {
-              if (err) {
-                console.error(`Error deleting ${fileName}:`, err);
-              } else {
-                console.log(`${fileName} has been deleted.`);
-              }
-            });
-          }
+        filesToZip.forEach((fileName) => {
+            deleteFile(fileName);
+          });
+
+
         setInterval(()=>sendZip(resx), 3000)
         
         
