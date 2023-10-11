@@ -1,16 +1,28 @@
-const fs = require('fs');
-const path = require('path');
-const util = require('util');
-const puppeteer = require('puppeteer');
-const handlebars = require('handlebars');
-const express = require('express');
-const archiver = require('archiver');
+import fs from 'fs';
+import path from 'path';
+import util from 'util';
+import puppeteer from 'puppeteer';
+import handlebars from 'handlebars';
+import express from 'express';
+import archiver from 'archiver';
+import excelToJS from './utils/getData.js'
+import completeChallanData from './utils/completeChallanData.js'
+import { fileURLToPath } from 'url';
+import fileUpload from 'express-fileupload';
+
+
 
 const readFile = util.promisify(fs.readFile);
 const app = express();
+app.use(fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Define the temporary directory path
 const tempDir = '/tmp';
+
+
+var challans = []
 
 async function getTemplateHtml() {
   console.log("Loading template file in memory");
@@ -105,46 +117,25 @@ function deleteFiles(files) {
   });
 }
 
-let challans = [
-  {
-    challanNumber: 10011,
-    challanData: {
-      ContactPersonName: "John Doe",
-      DeliveryChallanNumber: "CH10011",
-      DeliveryChallanDate: "2023-10-08",
-      ReceiverName: "Jane Smith",
-      ConsigneeName: "ABC Company",
-      ReceiverAddress: "123 Main St",
-      SpokesPersonName: "Sam Brown",
-      ConsigneeMobileNumber: "555-123-4567",
-      ReceiverCity: "Cityville",
-      ConsigneeAddress: "456 Oak St",
-      ReceiverStateAndPin: "State A, 12345",
-      ConsigneeCity: "Townsville",
-      ConsigneeStateAndPin: "State B, 54321",
-      GSTINNumber: "GSTIN12345",
-      ShipToState: "State C",
-      StateCode: "6789",
-      PONumber: "PO-1001",
-      ProductDescription: "Sample Product",
-      HSNCode: "HSN-1234",
-      MOQ: "10",
-      Boxes: "5",
-      Quantity: "50",
-      UnitPrice: "$20",
-      TotalAmount: "$1000",
-      CGST: "$50",
-      SGST: "$50",
-      IGSTValue: "$0",
-      IGST: "$0",
-      Total: "$1100",
-      TotalPreTax: "$1000",
-    },
-  },
-];
 
 
-app.get('/generate', async (req, res) => {
+
+app.get('/', (req,res)=>{
+  res.sendFile(__dirname+'/pages/home.html')
+})
+
+
+app.post('/generate', async (req, res) => {
+
+  if (!req.files || !req.files.file) {
+    return res.status(400).send('No files were uploaded.');
+  }
+
+  let file = req.files.file
+  challans = await excelToJS(file.data)
+  console.log(challans);
+  challans = await completeChallanData(challans)
+  console.log('Final data', challans);
   generatePdf(challans, res);
 });
 
