@@ -19,6 +19,7 @@ header{
 
 body{
     padding: 1% 5%;
+    background-color: aliceblue;
 }
 </style>
 
@@ -27,8 +28,8 @@ body{
     <header class="d-flex justify-content-center py-3">
         <img src="images/logo.png" class="logo">
         <ul class="nav nav-pills">
-          <li class="nav-item"><a href="/home.html" class="nav-link active" aria-current="page">Add Client</a></li>
-          <li class="nav-item"><a href="/generate.html" class="nav-link">Generate Challan</a></li>
+          <li class="nav-item"><a href="/" class="nav-link active" aria-current="page">Add Client</a></li>
+          <!-- <li class="nav-item"><a href="/generate.html" class="nav-link">Generate Challan</a></li> -->
           <li class="nav-item"><a href="/generateFromExcel" class="nav-link">Upload Excel</a></li>
         </ul>
       </header>
@@ -39,7 +40,7 @@ body{
 
       <div class="container">
 
-        <h4>Receiver Details</h4>
+        <h5>Receiver Details (Bill To)</h5>
         <div class="mb-3">
             <div class="input-group">
               <span class="input-group-text" id="basic-addon3">Receiver Name</span>
@@ -133,8 +134,8 @@ body{
       
 
       <div class="container">
-        <h4>Consignee Details</h4>
-        <input type="checkbox" id="copyToConsignee" onchange="copyReceiverToConsignee()">Same as Receiver Address</input>
+        <h5>Consignee Details (Ship To)</h5>
+        <input type="checkbox" name="sameShippingAddress" id="copyToConsignee" onchange="copyReceiverToConsignee()">Same as Receiver Address</input>
         <div class="mb-3">
             <div class="input-group">
               <span class="input-group-text" id="basic-addon3">Consignee Name</span>

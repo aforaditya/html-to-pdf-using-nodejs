@@ -1,12 +1,39 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Excel File Upload</title>
-    <!-- Include Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Excel File Upload</title>
+        <!-- Include Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    </head>
+
+<style>
+  .logo{
+    width: 150px;
+    padding: 10px;
+}
+
+header{
+    display: flex;
+    align-items: center;
+}
+
+body{
+    padding: 1% 5%;
+}
+</style>
+
 <body>
+
+    <header class="d-flex justify-content-center py-3">
+        <img src="images/logo.png" class="logo">
+        <ul class="nav nav-pills">
+          <li class="nav-item"><a href="/" class="nav-link" aria-current="page">Add Client</a></li>
+          <!-- <li class="nav-item"><a href="/generate.html" class="nav-link">Generate Challan</a></li> -->
+          <li class="nav-item"><a href="/generateFromExcel" class="nav-link active">Upload Excel</a></li>
+        </ul>
+      </header>
+
+
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-6 offset-md-3">
