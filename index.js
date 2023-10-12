@@ -9,14 +9,20 @@ import excelToJS from './utils/getData.js'
 import completeChallanData from './utils/completeChallanData.js'
 import { fileURLToPath } from 'url';
 import fileUpload from 'express-fileupload';
+import { set } from './utils/db.js';
+import bodyParser from 'body-parser';
 
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const readFile = util.promisify(fs.readFile);
 const app = express();
-app.use(fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }));
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+
+app.use(express.static('public'))
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(fileUpload({ limits: { fileSize: 100 * 1024 * 1024 } }));
+app.use(express.json());
+
 
 // Define the temporary directory path
 const tempDir = '/tmp';
@@ -36,6 +42,9 @@ async function getTemplateHtml() {
 }
 
 async function generatePdf(challans, res) {
+
+  console.log('Data final', challans);
+  
   try {
     const templateHtml = await getTemplateHtml();
     console.log("Compiling the template with handlebars");
@@ -118,10 +127,13 @@ function deleteFiles(files) {
 }
 
 
-
-
 app.get('/', (req,res)=>{
   res.sendFile(__dirname+'/pages/home.html')
+})
+
+
+app.get('/generateFromExcel', (req,res)=>{
+  res.sendFile(__dirname+'/pages/generateFromExcel.html')
 })
 
 
@@ -139,6 +151,24 @@ app.post('/generate', async (req, res) => {
   generatePdf(challans, res);
 });
 
-app.listen(process.env.PORT || 3000, () => {
+
+app.post('/client', async (req, res)=>{
+    
+    let data = req.body
+    let gstNumber = data.GSTINNumber
+    let clientData = data
+
+    await set('client', gstNumber, clientData)
+    res.json({success: true})
+
+})
+
+
+app.get('/template', (req, res)=>{
+    res.sendFile(__dirname+'/template.html')
+})
+
+
+app.listen(process.env.PORT || 5000, () => {
   console.log('Server ON');
 });

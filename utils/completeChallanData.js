@@ -1,52 +1,60 @@
-function getDataFromGST(GSTNumber){
+import { get } from "./db.js"
+
+async function getDataFromGST(GSTNumber){
+    return await get('client', GSTNumber)
+}
+
+
+function getProductDetails(products){
+
+    let newData = {
+        Products: []
+    }
+
+    let total = 0
+
+    products.forEach(product=>{
+
+        let productTotal = product.Qty * product.UnitPrice
+        
+        newData.Products.push({
+            ...product,
+            CGST: 9,
+            SGST: 9,
+            Boxes: product.Qty/product.MOQ,
+            TotalAmount: productTotal,
+        })
+
+        total+= productTotal
+
+    })
+
     
+    newData.IGST = 18
+    newData.IGSTValue = 0.18 * total
+    newData.Total = total + newData.IGSTValue
 
-
-    return {
-      ContactPersonName: "John Doe",
-      ReceiverName: "Jane Smith",
-      ConsigneeName: "ABC Company",
-      ReceiverAddress: "123 Main St",
-      SpokesPersonName: "Sam Brown",
-      ConsigneeMobileNumber: "555-123-4567",
-      ReceiverCity: "Cityville",
-      ConsigneeAddress: "456 Oak St",
-      ReceiverStateAndPin: "State A, 12345",
-      ConsigneeCity: "Townsville",
-      ConsigneeStateAndPin: "State B, 54321",
-      GSTINNumber: "GSTIN12345",
-      ShipToState: "State C",
-      StateCode: "6789",
-    }
+    return newData
 }
 
 
-function getProductDetails(product){
-    return {
-      ProductDescription: "Sample Product",
-      HSNCode: "HSN-1234",
-      MOQ: "10",
-      Boxes: "5",
-      Quantity: "50",
-      UnitPrice: "$20",
-      TotalAmount: "$1000",
-      CGST: "$50",
-      SGST: "$50",
-      IGSTValue: "$0",
-      IGST: "$0",
-      Total: "$1100",
-      TotalPreTax: "$1000",
-    }
-}
+
+function getFormattedDate(date) {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    const formattedDate = new Date().toLocaleDateString('en-US', options);
+    return formattedDate;
+  }
 
 async function fillData(order){
+
+    let clientData = await getDataFromGST(order.GSTINNumber)
     let newData = {
         challanNumber: order.DeliveryChallanNumber,
         challanData: {
             ...order, 
-            ...getDataFromGST(order.GSTINNumber), 
-            ...getProductDetails(order.Products),
-            DeliveryChallanDate: "2023-10-08",
+            ...clientData, 
+            DeliveryChallanDate: getFormattedDate(),
+            ...getProductDetails(order.Products)
         }
     }
 
