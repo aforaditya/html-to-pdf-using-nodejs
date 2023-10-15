@@ -426,7 +426,7 @@
         {{#each Products}}
             <tr style="height:7pt">
                 <td style="width:34pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-                    <p class="s3" style="padding-left: 1pt;text-indent: 0pt;line-height: 5pt;text-align: center;">1</p>
+                    <p class="s3" style="padding-left: 1pt;text-indent: 0pt;line-height: 5pt;text-align: center;">{{this.SNo}}</p>
                 </td>
                 <td style="width:183pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
                     <p class="s3" style="padding-left: 1pt;text-indent: 0pt;line-height: 5pt;text-align: left;">{{this.ProductDescription}}</p>
@@ -453,7 +453,7 @@
                     <p class="s3" style="padding-right: 2pt;text-indent: 0pt;line-height: 5pt;text-align: right;">{{this.UnitPrice}}</p>
                 </td>
                 <td style="width:55pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-                    <p class="s3" style="padding-right: 2pt;text-indent: 0pt;line-height: 5pt;text-align: right;">{{this.TaxAmount}}</p>
+                    <p class="s3" style="padding-right: 2pt;text-indent: 0pt;line-height: 5pt;text-align: right;">{{this.TaxValue}}</p>
                 </td>
                 <td style="width:55pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
                     <p class="s3" style="padding-right: 2pt;text-indent: 0pt;line-height: 5pt;text-align: right;">{{this.TotalAmount}}</p>
@@ -477,56 +477,24 @@
                 <p style="text-indent: 0pt;text-align: left;"><br></p>
             </td>
             <td style="width:59pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-                <p class="s3" style="padding-left: 25pt;padding-right: 24pt;text-indent: 0pt;line-height: 5pt;text-align: center;">{{IGST}}</p>
+                <p class="s3" style="padding-left: 25pt;padding-right: 24pt;text-indent: 0pt;line-height: 5pt;text-align: center;"></p>
             </td>
             <td style="width:55pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-                <p class="s3" style="padding-right: 2pt;text-indent: 0pt;line-height: 5pt;text-align: right;">{{IGSTValue}}</p>
+                <p class="s3" style="padding-right: 2pt;text-indent: 0pt;line-height: 5pt;text-align: right;"></p>
             </td>
         </tr>
         <tr style="height:7pt">
-            <td style="width:41pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-                <p class="s4" style="padding-left: 1pt;text-indent: 0pt;line-height: 5pt;text-align: left;">Sub Total</p>
-            </td>
-            <td style="width:41pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-                <p style="text-indent: 0pt;text-align: left;"><br></p>
-            </td>
-            <td style="width:40pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-                <p style="text-indent: 0pt;text-align: left;"><br></p>
-            </td>
-            <td style="width:59pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-                <p style="text-indent: 0pt;text-align: left;"><br></p>
-            </td>
-            <td style="width:55pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-                <p style="text-indent: 0pt;text-align: left;"><br></p>
-            </td>
+
         </tr>
         <tr style="height:7pt">
             <td style="width:34pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt" rowspan="2">
-                <p class="s4" style="padding-left: 7pt;text-indent: -4pt;line-height: 7pt;text-align: left;">Amount in
-                    Words:</p>
+                <p class="s4" style="padding-left: 7pt;text-indent: -4pt;line-height: 7pt;text-align: left;">Amount In Words</p>
             </td>
-            <td style="width:298pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt" colspan="5">
-                <p style="text-indent: 0pt;text-align: left;"><br></p>
-            </td>
-            <td style="width:41pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-                <p class="s4" style="padding-left: 1pt;text-indent: 0pt;line-height: 5pt;text-align: left;">Taxes</p>
-            </td>
-            <td style="width:41pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-                <p style="text-indent: 0pt;text-align: left;"><br></p>
-            </td>
-            <td style="width:40pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-                <p style="text-indent: 0pt;text-align: left;"><br></p>
-            </td>
-            <td style="width:59pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-                <p style="text-indent: 0pt;text-align: left;"><br></p>
-            </td>
-            <td style="width:55pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
-                <p style="text-indent: 0pt;text-align: left;"><br></p>
-            </td>
+
         </tr>
         <tr style="height:7pt">
             <td style="width:420pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt" colspan="8">
-                <p class="s7" style="padding-left: 1pt;text-indent: 0pt;line-height: 5pt;text-align: left;">Amount in words</p>
+                <p class="s7" style="padding-left: 1pt;text-indent: 0pt;line-height: 5pt;text-align: left;">{{AmountInWords}}</p>
             </td>
             <td style="width:59pt;border-top-style:solid;border-top-width:1pt;border-left-style:solid;border-left-width:1pt;border-bottom-style:solid;border-bottom-width:1pt;border-right-style:solid;border-right-width:1pt">
                 <p class="s4" style="padding-left: 1pt;text-indent: 0pt;line-height: 5pt;text-align: left;">Total</p>

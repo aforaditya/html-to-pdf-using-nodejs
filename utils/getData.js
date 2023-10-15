@@ -52,12 +52,12 @@ function transform(data){
     let index = parseInt(Object.values(item)[0])-1
 
     const product = {
-      ProductDescription: item.ProductDescription,
-      HSNCode: item.HSNCode,
-      MOQ: item.MOQ,
-      Qty: item.Qty,
-      UnitPrice: item.UnitPrice,
+      ...item
     };
+
+    product.TaxValue = (product.SGST * (product.Qty * product.UnitPrice))/100
+    product.TaxValue+= (product.CGST * (product.Qty * product.UnitPrice))/100
+    product.TotalAmount = (product.Qty * product.UnitPrice) + product.TaxValue 
 
 
      if(usedIndex.includes(index)){
@@ -69,6 +69,13 @@ function transform(data){
           PONumber: item.PONumber,
           DispatchFrom: item.DispatchFrom,
           DeliveryChallanNumber: item.DeliveryChallanNumber,
+          ConsigneeName: item.ConsigneeName,
+          ContactPersonName: item.ContactPersonName,
+          ConsigneeAddress: item.ConsigneeAddress,
+          ConsigneeCity: item.ConsigneeCity,
+          ConsigneeState: item.ConsigneeState,
+          ConsigneePIN: item.ConsigneePIN,
+          ConsigneeMobileNumber: item.ConsigneeMobileNumber,
           Products: [product]
         })
      }
