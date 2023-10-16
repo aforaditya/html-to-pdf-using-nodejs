@@ -24,7 +24,6 @@ async function getData(file){
     fs.createReadStream(csvFilePath)
       .pipe(csv())
       .on('data', (row) => {
-        console.log();
         data.push(row);
       })
       .on('end', () => {
@@ -55,9 +54,6 @@ function transform(data){
       ...item
     };
 
-    product.TaxValue = (product.SGST * (product.Qty * product.UnitPrice))/100
-    product.TaxValue+= (product.CGST * (product.Qty * product.UnitPrice))/100
-    product.TotalAmount = (product.Qty * product.UnitPrice) + product.TaxValue 
 
 
      if(usedIndex.includes(index)){
@@ -68,7 +64,6 @@ function transform(data){
           GSTINNumber: item.GSTINNumber,
           PONumber: item.PONumber,
           DispatchFrom: item.DispatchFrom,
-          DeliveryChallanNumber: item.DeliveryChallanNumber,
           ConsigneeName: item.ConsigneeName,
           ContactPersonName: item.ContactPersonName,
           ConsigneeAddress: item.ConsigneeAddress,
@@ -81,7 +76,6 @@ function transform(data){
      }
   })
 
-  console.log(transformedData);
   return transformedData
 
 }

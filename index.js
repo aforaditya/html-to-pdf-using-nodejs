@@ -93,6 +93,7 @@ async function zipAndSend(res) {
 
     output.on('close', () => {
       console.log("Zipped");
+      // Save Log
       res.download(zipFilePath, (err) => {
         if (err) {
           console.error('Error downloading the ZIP file:', err);
@@ -147,7 +148,7 @@ app.post('/generate', async (req, res) => {
   challans = await excelToJS(file.data)
   console.log(challans);
   challans = await completeChallanData(challans)
-  console.log('Final data', challans);
+  console.log('Final data', JSON.stringify(challans));
   generatePdf(challans, res);
 });
 

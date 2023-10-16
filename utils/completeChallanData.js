@@ -1,40 +1,53 @@
-import { get } from "./db.js"
+import { get, set } from "./db.js"
 
 async function getDataFromGST(GSTNumber){
     return await get('client', GSTNumber)
 }
 
 
-function getProductDetails(products){
+function getProductDetails(products, GSTINNumber){
+
+    let integratedGST = GSTINNumber.startsWith('07')
 
     let newData = {
         Products: []
     }
 
-    let total = 0
+    let serial = 1
 
     products.forEach(product=>{
-
-        let productTotal = product.Qty * product.UnitPrice
-        
-        newData.Products.push({
-            ...product,
-            CGST: 9,
-            SGST: 9,
-            Boxes: product.Qty/product.MOQ,
-            TotalAmount: productTotal,
-        })
-
-        total+= productTotal
-
+       product.SNo = serial++
+       product.TotalPreTax = (product.Qty * product.UnitPrice)
+       product.TaxValue =  (product.TaxRate/100) * (product.Qty * product.UnitPrice)
+       product.TotalAmount = product.TotalPreTax + product.TaxValue
+       product.CGST = integratedGST ? 'IGST' : product.TaxRate/2
+       product.SGST = integratedGST ? product.TaxRate : product.TaxRate/2
+       newData.Products.push(product)
     })
 
-    
-    newData.IGST = 18
-    newData.IGSTValue = 0.18 * total
-    newData.Total = total + newData.IGSTValue
-
     return newData
+}
+
+async function generateChallanNumber() {
+  const currentDate = new Date();
+
+  // Extract day, month, and year components from the current date
+  const day = currentDate.getDate();
+  const month = currentDate.getMonth() + 1; // Month is zero-based, so add 1
+  const year = currentDate.getFullYear() % 100; // Get the last two digits of the year
+
+  // Ensure day and month are two digits
+  const formattedDay = day < 10 ? `0${day}` : day;
+  const formattedMonth = month < 10 ? `0${month}` : month;
+
+  // Combine the formatted values into the desired string format
+  const customString = `DC${formattedDay}${formattedMonth}${year}`;
+
+  let currentCount = await get('challanSerialNumber', customString)
+  currentCount = currentCount ? currentCount.count : 1
+  await set('challanSerialNumber', customString, {count: currentCount+1})
+
+  return customString+currentCount;
 }
 
 
@@ -63,63 +76,77 @@ async function fillData(order){
       
     }
     
+    let challanNumber = await generateChallanNumber()
     let newData = {
-        challanNumber: order.DeliveryChallanNumber,
+        challanNumber: challanNumber,
         challanData: {
             ...clientData, 
             ...order, 
             DeliveryChallanDate: getFormattedDate(),
-            ...getProductDetails(order.Products),
+            ...getProductDetails(order.Products, order.GSTINNumber),
+            TaxLabel: order.GSTINNumber.startsWith('07') ? 'IGST' : 'C + S GST',
+            DeliveryChallanNumber: challanNumber
         }
     }
+
+
+
 
     return newData
 }
 
 
-function convertAmountToWords(amount) {
-    const ones = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
-    const teens = ["", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
-    const tens = ["", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
-    const thousands = ["", "thousand", "lakh", "crore", "arab", "kharab", "neel", "padma", "shankh"];
-  
-    function convertGroup(number, group) {
-      if (number === 0) {
-        return "";
-      } else if (number < 10) {
-        return ones[number] + " ";
-      } else if (number < 20) {
-        return teens[number - 10] + " ";
-      } else {
-        return tens[Math.floor(number / 10)] + " " + ones[number % 10] + " ";
-      }
+function convertNumberToWords(number) {
+  const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+  const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+  function convertToWordsLessThanThousand(num) {
+    let words = '';
+
+    if (num >= 100) {
+      words += ones[Math.floor(num / 100)] + ' Hundred ';
+      num %= 100;
     }
-  
-    function convertToWords(number) {
-      if (number === 0) {
-        return "zero";
-      }
-  
-      let words = "";
-      for (let i = 0; number > 0; i++) {
-        const group = number % 100;
-        if (group !== 0) {
-          words = convertGroup(group, i) + thousands[i] + " " + words;
-        }
-        number = Math.floor(number / 100);
-      }
-      return words.trim();
+
+    if (num >= 20) {
+      words += tens[Math.floor(num / 10)] + ' ';
+      num %= 10;
     }
-  
-    const cleanAmount = Math.floor(amount); // Convert to integer
-    const rupees = Math.floor(cleanAmount);
-    const paise = Math.round((amount - rupees) * 100);
-  
-    const rupeesWords = convertToWords(rupees);
-    const paiseWords = paise > 0 ? "and " + convertToWords(paise) + " paise" : "";
-  
-    return rupeesWords + " rupees " + paiseWords;
+
+    if (num > 0) {
+      words += ones[num] + ' ';
+    }
+
+    return words.trim();
   }
+
+  if (number === 0) {
+    return 'Zero';
+  }
+
+  let words = '';
+
+  if (number >= 10000000) {
+    words += convertToWordsLessThanThousand(Math.floor(number / 10000000)) + ' Crore ';
+    number %= 10000000;
+  }
+
+  if (number >= 100000) {
+    words += convertToWordsLessThanThousand(Math.floor(number / 100000)) + ' Lakh ';
+    number %= 100000;
+  }
+
+  if (number >= 1000) {
+    words += convertToWordsLessThanThousand(Math.floor(number / 1000)) + ' Thousand ';
+    number %= 1000;
+  }
+
+  if (number > 0) {
+    words += convertToWordsLessThanThousand(number);
+  }
+
+  return words.trim();
+}
   
 
 
@@ -147,7 +174,7 @@ export default async function completeChallanData(data){
         })
 
         order.challanData.Total = totalAmount
-        order.challanData.AmountInWords = convertAmountToWords(totalAmount)
+        order.challanData.AmountInWords = convertNumberToWords(totalAmount)
     })
 
     
