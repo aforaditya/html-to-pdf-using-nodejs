@@ -12,6 +12,15 @@ export async function get(collection, id){
     return resp.data()
 }
 
+export async function getCollection(collection){
+    let resp = await db.collection(collection).get()
+    return resp
+}
+
+export async function deleteDoc(collection, id){
+    await db.collection(collection).doc(id).delete();
+}
+
 export async function set(collection, id, data){
     await db.collection(collection).doc(id).set({...data})
 }

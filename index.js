@@ -9,7 +9,7 @@ import excelToJS from './utils/getData.js'
 import completeChallanData from './utils/completeChallanData.js'
 import { fileURLToPath } from 'url';
 import fileUpload from 'express-fileupload';
-import { set } from './utils/db.js';
+import { getCollection, set, deleteDoc } from './utils/db.js';
 import bodyParser from 'body-parser';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -22,6 +22,8 @@ app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(fileUpload({ limits: { fileSize: 100 * 1024 * 1024 } }));
 app.use(express.json());
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/pages');
 
 
 // Define the temporary directory path
@@ -41,9 +43,21 @@ async function getTemplateHtml() {
   }
 }
 
+function getDateTimeString() {
+  const now = new Date();
+  const day = now.getDate().toString().padStart(2, '0'); // Day of the month (zero-padded)
+  const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+  const month = monthNames[now.getMonth()]; // Month abbreviation
+  const year = now.getFullYear().toString().substr(-2); // Last two digits of the year
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+
+  return `${day}${month}${year}${hours}${minutes}${seconds}`;
+}
+
 async function generatePdf(challans, res) {
 
-  console.log('Data final', challans);
   
   try {
     const templateHtml = await getTemplateHtml();
@@ -63,7 +77,11 @@ async function generatePdf(challans, res) {
 
     await browser.close();
     console.log("PDFs Generated");
-    zipAndSend(res);
+    await zipAndSend(res);
+    set('generatedChallans', getDateTimeString(), {
+      dateTimeISO: new Date().toISOString(),
+      challans: challans
+    })
 
   } catch (err) {
     console.error("Error generating PDFs", err);
@@ -137,6 +155,20 @@ app.get('/generateFromExcel', (req,res)=>{
   res.sendFile(__dirname+'/pages/generateFromExcel.html')
 })
 
+app.get('/clients', async (req,res)=>{
+
+  let clients = []
+
+  let docs = await getCollection('client')
+  docs.forEach((doc) => {
+  clients.push(doc.data());
+  })
+
+  console.log(clients);
+
+  res.render('clients', {clients: clients})
+})
+
 
 app.post('/generate', async (req, res) => {
 
@@ -162,6 +194,12 @@ app.post('/client', async (req, res)=>{
     await set('client', gstNumber, clientData)
     res.json({success: true})
 
+})
+
+app.delete('/client/:gstNumber', async (req, res)=>{
+  let gstNumber = req.params.gstNumber
+  await deleteDoc('client', gstNumber)
+  res.json({success: true})
 })
 
 
