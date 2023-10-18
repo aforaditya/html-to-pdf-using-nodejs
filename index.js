@@ -85,7 +85,7 @@ async function generatePdf(challans, res) {
 
   } catch (err) {
     console.error("Error generating PDFs", err);
-    res.status(500).send('Error generating PDFs');
+    res.status(500).send('Error generating PDFs: '+err);
   }
 }
 
