@@ -33,7 +33,7 @@ var challans = []
 async function getTemplateHtml() {
   console.log("Loading template file in memory");
   try {
-    const invoicePath = path.resolve("./template.html");
+    const invoicePath = path.resolve("./template2.html");
     return await readFile(invoicePath, 'utf8');
   } catch (err) {
     console.error("Could not load html template", err);
@@ -166,7 +166,7 @@ app.post('/client', async (req, res)=>{
 
 
 app.get('/template', (req, res)=>{
-    res.sendFile(__dirname+'/template.html')
+    res.sendFile(__dirname+'/template2.html')
 })
 
 

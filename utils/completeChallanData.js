@@ -168,13 +168,20 @@ export default async function completeChallanData(data){
     
         let serial = 1
         let totalAmount = 0
+        let taxAmount = 0
+        let grandTotal = 0
+
         order.challanData.Products.forEach(item=>{
             item.SNo = serial++
-            totalAmount+= item.TotalAmount
+            totalAmount+= item.Qty * item.UnitPrice
+            taxAmount+= item.TaxValue
+            grandTotal+= item.TotalAmount
         })
 
-        order.challanData.Total = totalAmount
-        order.challanData.AmountInWords = convertNumberToWords(totalAmount)
+        order.challanData.TotalAmount = totalAmount
+        order.challanData.TaxAmount = taxAmount
+        order.challanData.GrandTotal = grandTotal
+        order.challanData.AmountInWords = convertNumberToWords(grandTotal)
     })
 
     
