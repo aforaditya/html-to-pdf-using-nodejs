@@ -84,7 +84,7 @@ async function fillData(order){
             ...order, 
             DeliveryChallanDate: getFormattedDate(),
             ...getProductDetails(order.Products, order.GSTINNumber),
-            TaxLabel: order.GSTINNumber.startsWith('07') ? 'IGST' : 'C + S GST',
+            TaxLabel: order.GSTINNumber.startsWith('07') ? 'C + S GST' : 'IGST',
             DeliveryChallanNumber: challanNumber
         }
     }
