@@ -7,7 +7,7 @@ async function getDataFromGST(GSTNumber){
 
 function getProductDetails(products, GSTINNumber){
 
-    let integratedGST = GSTINNumber.startsWith('07')
+    let integratedGST = !(GSTINNumber.startsWith('07'))
 
     let newData = {
         Products: []
