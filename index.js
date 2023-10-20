@@ -11,6 +11,7 @@ import { fileURLToPath } from 'url';
 import fileUpload from 'express-fileupload';
 import { getCollection, set, deleteDoc } from './utils/db.js';
 import bodyParser from 'body-parser';
+import { get } from './utils/db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -167,6 +168,13 @@ app.get('/clients', async (req,res)=>{
   console.log(clients);
 
   res.render('clients', {clients: clients})
+})
+
+
+app.get('/clients/:gstNumber', async (req, res)=>{
+  let gstNumber = req.params.gstNumber
+  let clientData = await get('client', gstNumber)
+  res.render('editClient', {clientData: clientData})
 })
 
 

@@ -270,9 +270,6 @@ clientDataForm.addEventListener("submit", function(event) {
     }
   }
 
-  formData.ReceiverStateAndPin = formData.ReceiverState +" "+ formData.ReceiverPIN
-  formData.ConsigneeStateAndPin = formData.ConsigneeState +" "+ formData.ConsigneePin
-  formData.ShipToState = formData.ReceiverState
 
 
   fetch('/client', {
