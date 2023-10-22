@@ -64,7 +64,9 @@ async function generatePdf(challans, res) {
     const templateHtml = await getTemplateHtml();
     console.log("Compiling the template with handlebars");
     const template = handlebars.compile(templateHtml, { strict: true });
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      args: ['--no-sandbox']
+    });
     const page = await browser.newPage();
 
     for (let i = 0; i < challans.length; i++) {

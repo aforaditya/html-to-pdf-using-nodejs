@@ -58,30 +58,42 @@ function getFormattedDate(date) {
     return formattedDate;
   }
 
+
+  function removeEmptyKeys(obj) {
+    const newObj = {};
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key) && obj[key] !== '') {
+        newObj[key] = obj[key];
+      }
+    }
+    return newObj;
+  }
+
+
 async function fillData(order){
 
 
     let clientData = await getDataFromGST(order.GSTINNumber)
 
-    try{
-    delete clientData.ConsigneeAddress
-    delete clientData.ConsigneeCity
-    delete clientData.ConsigneeMobileNumber
-    delete clientData.ConsigneeName
-    delete clientData.ConsigneePIN
-    delete clientData.ConsigneeState
-    delete clientData.ContactPersonName
-    }
-    catch{
+    // try{
+    // delete clientData.ConsigneeAddress
+    // delete clientData.ConsigneeCity
+    // delete clientData.ConsigneeMobileNumber
+    // delete clientData.ConsigneeName
+    // delete clientData.ConsigneePIN
+    // delete clientData.ConsigneeState
+    // delete clientData.ContactPersonName
+    // }
+    // catch{
       
-    }
+    // }
     
     let challanNumber = await generateChallanNumber()
     let newData = {
         challanNumber: challanNumber,
         challanData: {
             ...clientData, 
-            ...order, 
+            ...removeEmptyKeys(order), 
             DeliveryChallanDate: getFormattedDate(),
             ...getProductDetails(order.Products, order.GSTINNumber),
             TaxLabel: order.GSTINNumber.startsWith('07') ? 'C + S GST' : 'IGST',
