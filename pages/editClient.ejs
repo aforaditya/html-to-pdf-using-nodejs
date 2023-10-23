@@ -26,7 +26,7 @@ body{
 <body>
 
     <header class="d-flex justify-content-center py-3">
-        <img src="images/logo.png" class="logo">
+        <img src="/images/logo.png" class="logo">
         <ul class="nav nav-pills">
           <li class="nav-item"><a href="/" class="nav-link active" aria-current="page">Add Client</a></li>
           <li class="nav-item"><a href="/clients" class="nav-link">Clients</a></li>
@@ -247,7 +247,7 @@ body{
       </div>
 
 
-      <button type="submit" class="btn btn-primary">Add Client</button>
+      <button type="submit" class="btn btn-primary">Update Client</button>
 
 
     </form>
@@ -282,7 +282,7 @@ clientDataForm.addEventListener("submit", function(event) {
   .then(res=>res.json())
   .then(data=>{
     if(data.success)
-    alert('Client added successfully')
+    alert('Client details updated successfully')
   })
 
 });
@@ -292,7 +292,7 @@ clientDataForm.addEventListener("submit", function(event) {
 
 <script>
 
-            let formData = clientData
+           let formData = <%- JSON.stringify(formData) %>
 
             for (var key in formData) {
                 if (formData.hasOwnProperty(key)) {

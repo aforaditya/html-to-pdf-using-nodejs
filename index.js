@@ -176,7 +176,7 @@ app.get('/clients', async (req,res)=>{
 app.get('/clients/:gstNumber', async (req, res)=>{
   let gstNumber = req.params.gstNumber
   let clientData = await get('client', gstNumber)
-  res.render('editClient', {clientData: clientData})
+  res.render('editClient', {formData: clientData})
 })
 
 
@@ -200,6 +200,7 @@ app.post('/client', async (req, res)=>{
     let data = req.body
     let gstNumber = data.GSTINNumber
     let clientData = data
+    clientData.DateTimeCreated = new Date().toISOString()
 
     await set('client', gstNumber, clientData)
     res.json({success: true})
