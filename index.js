@@ -12,6 +12,8 @@ import fileUpload from 'express-fileupload';
 import { getCollection, set, deleteDoc } from './utils/db.js';
 import bodyParser from 'body-parser';
 import { get } from './utils/db.js';
+import session from 'express-session';
+import { getDateTimeInFormat } from './utils/timeFormats.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,12 +21,32 @@ const __dirname = path.dirname(__filename);
 const readFile = util.promisify(fs.readFile);
 const app = express();
 
+
+app.use(
+  session({
+    secret: '898d8a9d8a9d8a',
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(fileUpload({ limits: { fileSize: 100 * 1024 * 1024 } }));
 app.use(express.json());
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/pages');
+
+
+function checkAuthentication(req, res, next){
+  if(req.path!='/login' && !req.session.user)
+  res.redirect('/login')
+  else
+  next()
+}
+
+
+app.use(checkAuthentication)
 
 
 // Define the temporary directory path
@@ -57,12 +79,26 @@ function getDateTimeString() {
   return `${day}${month}${year}${hours}${minutes}${seconds}`;
 }
 
-async function generatePdf(challans, res) {
+
+function saveLog(challans, username){
+     
+  for(let challan of challans){
+    set('generatedChallans', challan.challanNumber, { 
+       challanData: challan.challanData,
+       username: username,
+       generatedDateTimeISO: new Date().toISOString()
+      })
+  }
+
+}
+
+
+async function generatePdf(challans, res, username) {
 
   
   try {
     const templateHtml = await getTemplateHtml();
-    console.log("Compiling the template with handlebars");
+    console.log("Compiling template");
     const template = handlebars.compile(templateHtml, { strict: true });
     const browser = await puppeteer.launch({
       args: ['--no-sandbox']
@@ -81,10 +117,14 @@ async function generatePdf(challans, res) {
     await browser.close();
     console.log("PDFs Generated");
     await zipAndSend(res);
-    set('generatedChallans', getDateTimeString(), {
-      dateTimeISO: new Date().toISOString(),
-      challans: challans
-    })
+
+    saveLog(challans, username)
+
+    // set('generatedChallans', getDateTimeString(), {
+    //   username: username,
+    //   dateTimeISO: new Date().toISOString(),
+    //   challans: challans
+    // })
 
   } catch (err) {
     console.error("Error generating PDFs", err);
@@ -191,7 +231,7 @@ app.post('/generate', async (req, res) => {
   console.log(challans);
   challans = await completeChallanData(challans)
   console.log('Final data', JSON.stringify(challans));
-  generatePdf(challans, res);
+  generatePdf(challans, res, req.session.user.username);
 });
 
 
@@ -218,7 +258,48 @@ app.get('/template', (req, res)=>{
     res.sendFile(__dirname+'/template2.html')
 })
 
+app.get('/challans', async (req, res)=>{
+  
+    let challans = []
+    let docs = await getCollection('generatedChallans')
+    let count = 1
+
+    docs.forEach(doc=>challans.push({
+      sn: count++,
+      challanNumber: doc.id,
+      challanDate: getDateTimeInFormat(doc.data().generatedDateTimeISO),
+      clientName: doc.data().challanData.ReceiverName,
+      username: doc.data().username
+    }))
+
+    res.render('challans', {challans: challans})
+})
+
+app.get('/login', (req, res)=>{
+  res.sendFile(__dirname+'/pages/login.html')
+})
+
+app.post('/login', async (req, res)=>{
+    let {username, password} = req.body
+    let user = await get('user', username)
+
+    if(user && user.password == password){
+    req.session.user = user
+    res.redirect('/')
+    }
+    else
+    res.redirect('/login')
+})
+
+
+
+app.get('/logout', (req, res)=>{
+  req.session.user = null
+  res.redirect('/login')
+})
+
 
 app.listen(process.env.PORT || 5000, () => {
   console.log('Server ON');
 });
+
