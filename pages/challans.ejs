@@ -1,0 +1,91 @@
+<html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>Excel File Upload</title>
+            <!-- Include Bootstrap CSS -->
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        </head>
+    
+    <style>
+      .logo{
+        width: 150px;
+        padding: 10px;
+    }
+    
+    header{
+        display: flex;
+        align-items: center;
+    }
+    
+    body{
+    padding: 1% 5%;
+    background-color: aliceblue;
+}
+
+    .container{
+        display: flex;
+        gap: 10px;
+    }
+    </style>
+    
+    <body>
+    
+        <header class="d-flex justify-content-center py-3">
+            <img src="images/logo.png" class="logo">
+            <ul class="nav nav-pills">
+              <li class="nav-item"><a href="/" class="nav-link" aria-current="page">Add Client</a></li>
+              <li class="nav-item"><a href="/clients" class="nav-link">Clients</a></li>
+              <!-- <li class="nav-item"><a href="/generate.html" class="nav-link">Generate Challan</a></li> -->
+              <li class="nav-item"><a href="/generateFromExcel" class="nav-link">Upload Excel</a></li>
+              <li class="nav-item"><a href="/challans" class="nav-link active">Generated Challans</a></li>
+              <li class="nav-item danger"><a href="/logout" class="nav-link">Logout</a></li>
+            </ul>
+          </header>
+
+
+        <div class="container">
+    
+            <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Challan Number</th>
+                    <th scope="col">Challan Date</th>
+                    <th scope="col">Client</th>
+                    <th scope="col">Created by</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                  <% for(let challan of challans) { %>
+                  <tr>
+                    <th scope="row"><%= challan.sn %></th>
+                    <td><%= challan.challanNumber %></td>
+                    <td><%= challan.challanDate %></td>
+                    <td><%= challan.clientName %></td>
+                    <td><%= challan.username %></td>
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
+
+
+        </div>
+
+
+
+    
+
+    
+
+    <!-- Include jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+    <script>
+
+    </script>
+</body>
+</html>
