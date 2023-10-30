@@ -30,7 +30,17 @@
     
     <body>
     
-      <%- include('partials/header') %>
+      <header class="d-flex justify-content-center py-3">
+        <img src="images/logo.png" class="logo">
+        <ul class="nav nav-pills">
+          <li class="nav-item"><a href="/" class="nav-link" aria-current="page">Add Client</a></li>
+          <li class="nav-item"><a href="/clients" class="nav-link active">Clients</a></li>
+          <!-- <li class="nav-item"><a href="/generate.html" class="nav-link">Generate Challan</a></li> -->
+          <li class="nav-item"><a href="/generateFromExcel" class="nav-link">Upload Excel</a></li>
+          <li class="nav-item"><a href="/challans" class="nav-link">Generated Challans</a></li>
+          <li class="nav-item danger"><a href="/logout" class="nav-link">Logout</a></li>
+        </ul>
+      </header>
 
 
         <div class="container">
